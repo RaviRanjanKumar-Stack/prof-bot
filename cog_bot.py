@@ -1,9 +1,27 @@
+from flask import Flask
+import threading
 import discord
 from discord.ext import commands, tasks
 
 # ======================
 # CONFIG
 # ======================
+# -----------------------
+# FLASK KEEP-ALIVE SERVER
+# -----------------------
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Bot is running!"
+
+def run_web():
+    app.run(host="0.0.0.0", port=10000)
+
+def keep_alive():
+    t = threading.Thread(target=run_web)
+    t.daemon = True
+    t.start()
 import os
 TOKEN = os.getenv("DISCORD_TOKEN")
 if not TOKEN:
@@ -104,4 +122,5 @@ async def before_display_name_checker():
 # ======================
 # RUN
 # ======================
+keep_alive()
 bot.run(TOKEN)
